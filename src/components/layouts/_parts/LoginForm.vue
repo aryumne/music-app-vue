@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { mapActions } from 'pinia'
+import useUserStore from '@/stores/user'
 export default {
   data() {
     return {
@@ -52,12 +54,25 @@ export default {
     }
   },
   methods: {
-    login(value) {
+    ...mapActions(useUserStore, ['signIn']),
+    async login(value) {
+      this.reg_show_alert = true
+      this.reg_in_submission = true
+      this.reg_button_text = 'Loading...'
+      try {
+        await this.signIn(value)
+      } catch (error) {
+        this.login_in_submission = false
+        this.reg_alert_variant = 'bg-red-500'
+        this.reg_alert_msg = error.message
+        console.log(error)
+        return
+      }
       this.login_in_submission = true
       this.login_show_alert = true
       this.login_alert_variant = 'bg-green-500'
       this.login_alert_msg = 'You are successfully authenticated.'
-      console.log(value)
+      window.location.reload()
     }
   }
 }
